@@ -73,7 +73,7 @@ const getDonationStats = async (req, res) => {
         collected: { $sum: { $cond: [{ $eq: ["$status", "COLLECTED"] }, 1, 0] } },
         activeDonations: {
           $sum: { $cond: [{ $in: ["$status", ["AVAILABLE", "RESERVED"]] }, 1, 0] },
-        },
+        },   
 >>>>>>> ba31daf9cc7b3f1d98f3164ed23b0af81e54ce47
         totalItemsRescued: {
           $sum: { $cond: [{ $eq: ["$status", "COLLECTED"] }, "$quantity", 0] },
