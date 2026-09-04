@@ -15,7 +15,7 @@ const EDITABLE_FIELDS = [
   "availableUntil",
   "description",
 ]; 
-
+   
 const validateDonation = (values, requireAll = true) => {
   const required = [
     ["providerName", "Please enter the food provider name."],
