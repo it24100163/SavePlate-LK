@@ -14,7 +14,7 @@ const EDITABLE_FIELDS = [
   "contactNumber",
   "availableUntil",
   "description",
-];
+]; 
 
 const validateDonation = (values, requireAll = true) => {
   const required = [
