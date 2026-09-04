@@ -17,6 +17,13 @@ export const toDateTimeLocal = (dateValue) => {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 };
 
+export const getMinimumDateTimeLocal = (dateValue = new Date()) => {
+  const minimum = new Date(dateValue);
+  minimum.setSeconds(0, 0);
+  minimum.setMinutes(minimum.getMinutes() + 1);
+  return toDateTimeLocal(minimum);
+};
+
 export const isExpired = (donation) => donation.status === "AVAILABLE" && new Date(donation.availableUntil) <= new Date();
 
 export const getCategoryIcon = (category) =>

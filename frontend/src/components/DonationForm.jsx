@@ -1,9 +1,16 @@
-import { useState } from "react";
-import { CATEGORIES, QUANTITY_UNITS, validateDonationForm } from "../utils/helpers";
+import { useEffect, useState } from "react";
+import { CATEGORIES, getMinimumDateTimeLocal, QUANTITY_UNITS, validateDonationForm } from "../utils/helpers";
 
 export default function DonationForm({ initialValues, submitText, submitting, serverError, onSubmit, onCancel }) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+  const [minimumAvailableUntil, setMinimumAvailableUntil] = useState(getMinimumDateTimeLocal);
+
+  useEffect(() => {
+    const refreshMinimum = () => setMinimumAvailableUntil(getMinimumDateTimeLocal());
+    const timer = window.setInterval(refreshMinimum, 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const updateValue = (event) => {
     const { name, value } = event.target;
@@ -48,7 +55,7 @@ export default function DonationForm({ initialValues, submitText, submitting, se
       <div className="form-section-heading"><span>3</span><div><h2>Pickup details</h2><p>Help recipients plan a timely collection.</p></div></div>
       <div className="form-grid">
         {field("location", "Pickup Location", <input id="location" name="location" value={values.location} onChange={updateValue} placeholder="e.g. Colombo" />)}
-        {field("availableUntil", "Available Until", <input id="availableUntil" name="availableUntil" type="datetime-local" value={values.availableUntil} onChange={updateValue} />)}
+        {field("availableUntil", "Available Until", <input id="availableUntil" name="availableUntil" type="datetime-local" min={minimumAvailableUntil} value={values.availableUntil} onChange={updateValue} aria-describedby={errors.availableUntil ? "availableUntil-error" : undefined} />)}
         <div className="form-group full-width">
           <label htmlFor="description">Description <span aria-hidden="true">*</span></label>
           <textarea id="description" name="description" rows="5" maxLength="300" value={values.description} onChange={updateValue} placeholder="Describe the surplus food and any useful pickup information." />
