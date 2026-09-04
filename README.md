@@ -83,7 +83,7 @@ npm install
 Copy `backend/.env.example` to `backend/.env`, then configure:
 
 ```env
-PORT=5001
+PORT=5000
 MONGO_URI=mongodb+srv://YOUR_USER:YOUR_PASSWORD@YOUR_CLUSTER/saveplate_lk
 CLIENT_URL=http://localhost:5173
 ```
@@ -106,7 +106,7 @@ npm install
 Copy `frontend/.env.example` to `frontend/.env`:
 
 ```env
-VITE_API_URL=http://localhost:5001/api
+VITE_API_URL=http://localhost:5000/api
 ```
 
 Start the web app:

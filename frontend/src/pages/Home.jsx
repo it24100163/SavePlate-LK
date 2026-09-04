@@ -3,19 +3,41 @@ import { Link } from "react-router-dom";
 import StatCard from "../components/StatCard";
 import { getDonationStats } from "../services/api";
 
-const fallbackStats = { available: "—", reserved: "—", collected: "—", totalItemsRescued: "—" };
+const fallbackStats = {
+  totalDonations: "—",
+  available: "—",
+  reserved: "—",
+  collected: "—",
+  activeDonations: "—",
+  totalItemsRescued: "—",
+};
 
 export default function Home() {
   const [stats, setStats] = useState(fallbackStats);
   const [statsError, setStatsError] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     getDonationStats()
       .then(({ data }) => {
+        if (!isMounted) return;
         if (!data?.data) throw new Error("Statistics response is unavailable.");
-        setStats(data.data);
+        setStats({ ...fallbackStats, ...data.data });
+        setStatsError(false);
       })
-      .catch(() => setStatsError(true));
+      .catch(() => {
+        if (!isMounted) return;
+        setStatsError(true);
+      })
+      .finally(() => {
+        if (isMounted) setStatsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -27,8 +49,8 @@ export default function Home() {
             <h1>Good Food Shouldn’t <span>Go to Waste.</span></h1>
             <p>SavePlate LK helps food providers share surplus food with charities, organisations, volunteers and individuals who can put it to good use.</p>
             <div className="hero-actions">
-              <Link className="button button-light button-large" to="/donate">Donate Surplus Food <span aria-hidden="true">→</span></Link>
-              <Link className="button button-outline-light button-large" to="/donations">Find Available Food</Link>
+              <Link className="button button-light button-large hero-primary" to="/donate">Donate Surplus Food <span aria-hidden="true">→</span></Link>
+              <Link className="button button-outline-light button-large hero-secondary" to="/donations">Find Available Food</Link>
             </div>
             <div className="hero-trust"><span>✓ Simple listings</span><span>✓ Direct pickup</span><span>✓ Built for Sri Lanka</span></div>
           </div>
@@ -41,7 +63,7 @@ export default function Home() {
               <div className="basket-body"><strong>Fresh surplus</strong><small>Ready to share</small></div>
             </div>
             <div className="floating-note note-top"><span>♻</span><div><strong>Less waste</strong><small>More community impact</small></div></div>
-            <div className="floating-note note-bottom"><span>♥</span><div><strong>Shared locally</strong><small>Collected with care</small></div></div>
+            
           </div>
         </div>
         <div className="hero-wave" />
@@ -92,12 +114,27 @@ export default function Home() {
       <section className="section impact-section">
         <div className="container">
           <div className="impact-heading"><div><span className="eyebrow light">Live community impact</span><h2>Small Actions, Meaningful Results</h2></div><Link className="button button-outline-light" to="/donations">Browse donations</Link></div>
-          {statsError && <p className="stats-error">Statistics will appear when the API is connected.</p>}
-          <div className="stats-grid">
-            <StatCard icon="●" value={stats.available} label="Available Donations" accent="green" />
-            <StatCard icon="◷" value={stats.reserved} label="Reserved Donations" accent="amber" />
-            <StatCard icon="✓" value={stats.collected} label="Completed Rescues" accent="blue" />
-            <StatCard icon="♥" value={stats.totalItemsRescued} label="Items Rescued" accent="pink" />
+          {statsError && (
+            <div className="stats-status">
+              <p className="stats-error">Statistics are temporarily unavailable. Please refresh or try again shortly.</p>
+            </div>
+          )}
+          <div className="stats-grid" aria-live="polite">
+            {statsLoading ? (
+              <>
+                <div className="stat-card loading-card"><div className="stat-icon">…</div><div><strong>Loading</strong><span>Updating metrics</span></div></div>
+                <div className="stat-card loading-card"><div className="stat-icon">…</div><div><strong>Loading</strong><span>Updating metrics</span></div></div>
+                <div className="stat-card loading-card"><div className="stat-icon">…</div><div><strong>Loading</strong><span>Updating metrics</span></div></div>
+                <div className="stat-card loading-card"><div className="stat-icon">…</div><div><strong>Loading</strong><span>Updating metrics</span></div></div>
+              </>
+            ) : (
+              <>
+                <StatCard icon="●" value={stats.available} label="Available Donations" accent="green" />
+                <StatCard icon="◷" value={stats.reserved} label="Reserved Donations" accent="amber" />
+                <StatCard icon="✓" value={stats.collected} label="Completed Rescues" accent="blue" />
+                <StatCard icon="♥" value={stats.totalItemsRescued} label="Items Rescued" accent="pink" />
+              </>
+            )}
           </div>
           <p className="metric-note">Items Rescued is an MVP metric: the summed quantity of collected listings across their listed units.</p>
         </div>

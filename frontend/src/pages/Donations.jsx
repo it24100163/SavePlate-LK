@@ -3,7 +3,7 @@ import DonationCard from "../components/DonationCard";
 import EmptyState from "../components/EmptyState";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getApiError, getDonations } from "../services/api";
-import { CATEGORIES } from "../utils/helpers";
+import { CATEGORIES, LOCATIONS } from "../utils/helpers";
 
 const initialFilters = { search: "", category: "All", location: "All", status: "AVAILABLE" };
 
@@ -37,10 +37,7 @@ export default function Donations() {
         <section className="filter-panel" aria-label="Donation filters">
           <div className="search-field"><span aria-hidden="true">⌕</span><input aria-label="Search donations" name="search" value={filters.search} onChange={setFilter} placeholder="Search food, provider or location..." /></div>
           <div className="filter-field"><label htmlFor="category">Category</label><select id="category" name="category" value={filters.category} onChange={setFilter}><option>All</option>{CATEGORIES.map((item) => <option key={item}>{item}</option>)}</select></div>
-          <div className="filter-field">
-  <label htmlFor="location">Location</label>
-  <input id="location" name="location" type="text" value={filters.location === "All" ? "" : filters.location} onChange={setFilter} placeholder="Enter location..." />
-</div>
+          <div className="filter-field"><label htmlFor="location">Location</label><select id="location" name="location" value={filters.location} onChange={setFilter}><option>All</option>{LOCATIONS.map((item) => <option key={item}>{item}</option>)}</select></div>
           <div className="filter-field"><label htmlFor="status">Status</label><select id="status" name="status" value={filters.status} onChange={setFilter}><option value="AVAILABLE">Available</option><option value="RESERVED">Reserved</option><option value="COLLECTED">Collected</option><option>All</option></select></div>
           <button className="clear-button" type="button" onClick={() => setFilters(initialFilters)}>Clear Filters</button>
         </section>

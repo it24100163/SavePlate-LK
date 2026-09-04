@@ -62,9 +62,13 @@ const getDonationStats = async (req, res) => {
     {
       $group: {
         _id: null,
+        totalDonations: { $sum: 1 },
         available: { $sum: { $cond: [{ $eq: ["$status", "AVAILABLE"] }, 1, 0] } },
         reserved: { $sum: { $cond: [{ $eq: ["$status", "RESERVED"] }, 1, 0] } },
         collected: { $sum: { $cond: [{ $eq: ["$status", "COLLECTED"] }, 1, 0] } },
+        activeDonations: {
+          $sum: { $cond: [{ $in: ["$status", ["AVAILABLE", "RESERVED"]] }, 1, 0] },
+        },
         totalItemsRescued: {
           $sum: { $cond: [{ $eq: ["$status", "COLLECTED"] }, "$quantity", 0] },
         },
@@ -72,9 +76,18 @@ const getDonationStats = async (req, res) => {
     },
   ]);
 
+  const fallback = {
+    totalDonations: 0,
+    available: 0,
+    reserved: 0,
+    collected: 0,
+    activeDonations: 0,
+    totalItemsRescued: 0,
+  };
+
   res.json({
     success: true,
-    data: summary || { available: 0, reserved: 0, collected: 0, totalItemsRescued: 0 },
+    data: summary ? { ...fallback, ...summary } : fallback,
   });
 };
 

@@ -48,7 +48,7 @@ export default function DonationForm({ initialValues, submitText, submitting, se
       <div className="form-section-heading"><span>3</span><div><h2>Pickup details</h2><p>Help recipients plan a timely collection.</p></div></div>
       <div className="form-grid">
         {field("location", "Pickup Location", <input id="location" name="location" value={values.location} onChange={updateValue} placeholder="e.g. Colombo" />)}
-        {field("availableUntil", "Available Until", <input id="availableUntil" name="availableUntil" type="datetime-local" min={new Date().toISOString().slice(0, 16)} value={values.availableUntil} onChange={updateValue}/>)}
+        {field("availableUntil", "Available Until", <input id="availableUntil" name="availableUntil" type="datetime-local" value={values.availableUntil} onChange={updateValue} />)}
         <div className="form-group full-width">
           <label htmlFor="description">Description <span aria-hidden="true">*</span></label>
           <textarea id="description" name="description" rows="5" maxLength="300" value={values.description} onChange={updateValue} placeholder="Describe the surplus food and any useful pickup information." />

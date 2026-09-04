@@ -6,13 +6,26 @@ const donationRoutes = require("./routes/donationRoutes");
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
-const port = process.env.PORT || 5001;
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"].filter(Boolean);
+const port = process.env.PORT || 5000;
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:4173",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:5175",
+  "http://127.0.0.1:4173",
+].filter(Boolean);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      const isLocalDevOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      if (isLocalDevOrigin) return callback(null, true);
       return callback(Object.assign(new Error("Origin is not allowed by CORS."), { status: 403 }));
     },
   })
